@@ -10,7 +10,7 @@ from datasets import load_dataset
 
 
 def refreshing_my_token():
-    refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyMTI3ODcwNSwiaWF0IjoxNzIxMTkyMzA1LCJqdGkiOiJjOWRhMTkzYmM4MDk0ODkyYjU1NTM4NmY0NDhjZThmZCIsInVzZXJfaWQiOjF9.eA2QdKFUWY21LmDR_81H2JT9KBFTYcJ1vQQrP0thSWI"
+    refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyMTMwOTE5MiwiaWF0IjoxNzIxMjIyNzkyLCJqdGkiOiIzOWU1MzNmNDI4ZGY0NGQ4YTQ5NjgyYWM5NGZiMWJlNiIsInVzZXJfaWQiOjF9.PRdOsEKDT8gLE7pyNt6NXSgKxc68wH89Wq6TG4dUCmo"
     url = "https://trans.uicgroup.tech/api/v1/users/TokenRefresh/"
     headers = {'Content-Type': 'application/json'}
     data = {'refresh': refresh_token}
