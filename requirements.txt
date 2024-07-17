@@ -1,6 +1,6 @@
 pandas
 tqdm
 pathlib
-cleantext
+clean-text[gpl]
 requests
 datasets
