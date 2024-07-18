@@ -48,7 +48,8 @@ def refreshing_my_token():
 
 
 def clean_text(text):
-    return clean(df.context[10],
+    return clean(
+    text = text,
     fix_unicode=True,          
     to_ascii=False,           
     lower=False,              
@@ -99,7 +100,7 @@ def main():
     ds = load_dataset("databricks/databricks-dolly-15k")
     df = pd.DataFrame(ds['train'])
     df = df[df.category == 'open_qa'] #open-qa
-    file_name = 'response_V2'
+    file_name = 'responsev2'
     total_count = len(df) // 100
     save_row = 1
     content = {'response': []}
