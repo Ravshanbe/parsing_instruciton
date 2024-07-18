@@ -99,7 +99,7 @@ def main():
     ds = load_dataset("databricks/databricks-dolly-15k")
     df = pd.DataFrame(ds['train'])
     df = df[df.category == 'open_qa'] #open-qa
-    file_name = 'responsev2'
+    file_name = 'response_V2'
     total_count = len(df) // 100
     save_row = 1
     content = {'response': []}
