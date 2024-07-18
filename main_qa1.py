@@ -49,20 +49,19 @@ def refreshing_my_token():
 
 def clean_text(text):
     return clean(
-        text=text,
-        fix_unicode=True,
-        to_ascii=True,
-        lower=False,
-        no_line_breaks=False,
-        no_urls=True,
-        no_emails=True,
-        no_phone_numbers=False,
-        no_numbers=False,
-        no_digits=False,
-        no_currency_symbols=False,
-        no_punct=False,
-        lang="en"
-    ).replace('""', '"').replace("'", '`').replace("\n", '')
+    text = text,
+    fix_unicode=True,          
+    to_ascii=False,           
+    lower=False,              
+    no_urls=False,            
+    no_emails=False,          
+    no_phone_numbers=False,   
+    no_numbers=False,          
+    no_digits=False,          
+    no_currency_symbols=False,
+    no_punct=False,           
+    lang="en"                       
+).replace('""', '"').replace("'", '`')
 
 def translate_batch(texts, token, session):
     if texts:
@@ -101,7 +100,7 @@ def main():
     ds = load_dataset("databricks/databricks-dolly-15k")
     df = pd.DataFrame(ds['train'])
     df = df[df.category == 'open_qa'] #open-qa
-    file_name = 'instructionv2'
+    file_name = 'instructionV2'
     total_count = len(df) // 100
     save_row = 1
     content = {'instruction': []}
@@ -112,16 +111,14 @@ def main():
             print("Failed to start the translation process due to token refresh failure.")
 
 
-        with ThreadPoolExecutor(max_workers=8) as executor:
-            future_to_row = {executor.submit(process_row, row, token, session): row for row in df['instruction'][:10]}
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_row = {executor.submit(process_row, row, token, session): row for row in df['instruction']}
             for future in tqdm(as_completed(future_to_row), total=len(future_to_row)):
                 result = future.result()
-                print(future)
-                print(result)
                 if result:
                     content['instruction'].extend(result)
-                    print(content['instruction'].extend(result))
                     if save_row % 100 == 0:
+                        print(content['instruction'][-5:])
                         save_to_csv(content, file_name, save_row, total_count)
                         content = {'instruction': []}
                 save_row += 1
