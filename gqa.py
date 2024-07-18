@@ -104,7 +104,7 @@ def save_to_csv(content, file_name, save_row, total_count):
 def main():
     ds = load_dataset("databricks/databricks-dolly-15k")
     df = pd.DataFrame(ds['train'])
-    df = df[df.category == 'open_qa'][:10]  # open-qa
+    df = df[df.category == 'general_qa']  # open-qa
     file_name = 'general_question'
     total_count = len(df) // 100
     save_row = 1
