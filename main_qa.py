@@ -8,9 +8,22 @@ import requests
 import time
 from datasets import load_dataset
 
+def refresh_tokenrefresher():
+    url = "https://trans.uicgroup.tech/api/v1/users/login/"
+    headers = {'Content-Type': 'application/json'}
+    data = {
+        "username": "admin",
+        "password": "pQ4kW1xW8rR3yE6l"}
+    response = requests.post(url, headers=headers, json=data)
+    if response.status_code == 200:
+        refresh_token = response.json().get('refresh')
+        return refresh_token
+    else:
+        print(response.status_code)
+        return None
 
 def refreshing_my_token():
-    refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyMTMwOTE5MiwiaWF0IjoxNzIxMjIyNzkyLCJqdGkiOiIzOWU1MzNmNDI4ZGY0NGQ4YTQ5NjgyYWM5NGZiMWJlNiIsInVzZXJfaWQiOjF9.PRdOsEKDT8gLE7pyNt6NXSgKxc68wH89Wq6TG4dUCmo"
+    refresh_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyMTM2OTU3MSwiaWF0IjoxNzIxMjgzMTcxLCJqdGkiOiJmMTVhOTk0OTc3Mjg0MDhkOTJlN2ZiNjEzMGI4OGQ0NyIsInVzZXJfaWQiOjF9.kVqBA20Qb5BqHUE07WYGzH5WFthiqLF_VJ6FIGyBGFA"
     url = "https://trans.uicgroup.tech/api/v1/users/TokenRefresh/"
     headers = {'Content-Type': 'application/json'}
     data = {'refresh': refresh_token}
@@ -18,8 +31,21 @@ def refreshing_my_token():
     if response.status_code == 200:
         new_token = response.json().get('access')
         return new_token
+    elif response.status_code == 401:
+        refresh_token = refresh_tokenrefresher()
+        data = {'refresh': refresh_token}
+        response = requests.post(url, headers=headers, json=data)
+        if response.status_code == 200:
+          new_token = response.json().get('access')
+          return new_token
+        else:
+          print(response.status_code)
+          return None
+
     else:
+        print(response.status_code)
         return None
+
 
 def clean_text(text):
     return clean(
@@ -74,7 +100,8 @@ def main():
 
     ds = load_dataset("databricks/databricks-dolly-15k")
     df = pd.DataFrame(ds['train'])
-    file_name = 'translated'
+    df = df[df.category == 'open_qa'] #open-qa
+    file_name = 'open_QA_instructionv2'
     total_count = len(df) // 100
     save_row = 1
     content = {'instruction': []}
@@ -83,14 +110,17 @@ def main():
         token = refreshing_my_token()
         if not token:
             print("Failed to start the translation process due to token refresh failure.")
-            
-        
+
+
         with ThreadPoolExecutor(max_workers=8) as executor:
-            future_to_row = {executor.submit(process_row, row, token, session): row for row in df['instruction']}
+            future_to_row = {executor.submit(process_row, row, token, session): row for row in df['instruction'][:10]}
             for future in tqdm(as_completed(future_to_row), total=len(future_to_row)):
                 result = future.result()
+                print(future)
+                print(result)
                 if result:
                     content['instruction'].extend(result)
+                    print(content['instruction'].extend(result))
                     if save_row % 100 == 0:
                         save_to_csv(content, file_name, save_row, total_count)
                         content = {'instruction': []}
