@@ -93,7 +93,7 @@ def process_row(row, token, session):
 def save_to_csv(content, file_name, save_row, total_count):
     pathlib.Path(f'./Databricks_dolly_15K_translated/{file_name}').mkdir(exist_ok=True, parents=True)
     df_out = pd.DataFrame(data=content)
-    df_out.to_csv(f'./Databricks_dolly_15K_translated/{file_name}/{file_name}_{save_row-99}-{save_row}_rows_data_total_{save_row//100}-{total_count}.csv', index=False)
+    df_out.to_csv(f'./Databricks_dolly_15K_translated/{file_name}/{file_name}-{save_row//100}-{total_count}.csv', index=False)
 
 
 def main():
@@ -101,7 +101,7 @@ def main():
     ds = load_dataset("databricks/databricks-dolly-15k")
     df = pd.DataFrame(ds['train'])
     df = df[df.category == 'open_qa'] #open-qa
-    file_name = 'open_QA_instructionv2'
+    file_name = 'instructionv2'
     total_count = len(df) // 100
     save_row = 1
     content = {'instruction': []}
